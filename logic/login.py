@@ -13,7 +13,6 @@ SCOPES = ["ag1", "ag2", "ag3", "eq1", "eq2", "org1", "org2", "files", "offline_a
 HOST = "localhost"
 PORT = 9090
 
-
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -92,6 +91,7 @@ def refresh_token(secrets_: dict[str, str], refresh_token_: str) -> dict[str, st
 
         return response.json()
 
+
 def api_get(access_token, resource_url):
     headers = {
         'authorization': 'Bearer ' + access_token,
@@ -113,54 +113,28 @@ def get_tokens() -> dict:
     return authorise(secrets)
 
 
-# 'Accept': 'application/vnd.deere.axiom.v3.image+json',
-# 'Accept-UOM-System' : 'METRIC',d
-# 'Accept-Yield-Preference' : 'mass',
-# 'measurementType' : 'HarvestYieldResult',
-
-if __name__ == "__main__":
-    # secrets = json.loads(Path("secrets.json").read_text())["installed"]
-    secrets = {
-    "client_id": "0oakx4g6yjiXGPK5c5d7",
-    "client_secret": "2v3NrRR924Yj6dnftvjMhr7Q79wM2tIUB4whG-EkHToDs-rvntAvDzlUMrEj0ypp",
-    "auth_uri": "https://signin.johndeere.com/oauth2/aus78tnlaysMraFhC1t7/v1/authorize",
-    "token_uri": "https://signin.johndeere.com/oauth2/aus78tnlaysMraFhC1t7/v1/token",
-    "redirect_uris": ["http://localhost"]
-    }
-    # print(secrets)
-
-    tokens = authorise(secrets)
-    # print(f"Tokens: {tokens}")
-
-    # refreshed_tokens = refresh_token(secrets, tokens["refresh_token"])
-    # print(f"Refreshed tokens: {refreshed_tokens}")
-
-
-    # ORGANIZATIONS
-    os.system('cls')
+def get_organizations(tokens) -> list:
     url = f"https://sandboxapi.deere.com/platform/organizations"
     res = api_get(tokens['access_token'], url)
     orgs = res.json()["values"]
     dfOrg = pd.json_normalize(res.json()["values"])
     orgsList = dfOrg[['id', 'name']].values.tolist()
-    dfOrg.to_excel("organizations.xlsx", index=False)
+    return orgsList
 
 
-    # MACHINES
-    os.system('cls')
-    count = 0
+def get_machines(tokens) -> list:
     url = f"https://equipmentapi.deere.com/isg/equipment?itemLimit=5000&categories=machine"
     res = api_get(tokens['access_token'], url)
     machines = res.json()["values"]
-    # print(count, '\n')
     dfMach = pd.json_normalize(machines)
-    # print(dfMach)
     dfMach.sort_values(by='id', key=lambda x: x.astype(int), ascending=False)
-    # print(dfMach)
     machinesList = dfMach[['id', 'principalId', 'serialNumber', 'name', 'organization.id']].values.tolist()
     machinesList.sort(key=lambda x: int(x[1]), reverse=True)
-    dfMach.to_excel("equipment.xlsx", index=False)
+    return machinesList
 
-    os.system('cls')
 
-    print(f"files exported: organizations.xlsx, equipment.xlsx")
+if __name__ == "__main__":
+    pass
+    # refreshed_tokens = refresh_token(secrets, tokens["refresh_token"])
+    # print(f"Refreshed tokens: {refreshed_tokens}")
+
