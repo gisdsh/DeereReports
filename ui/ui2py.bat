@@ -1,0 +1,1 @@
+for %%f in (*.ui) do pyside6-uic %%f -o %%~nf.py
