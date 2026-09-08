@@ -13,14 +13,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.btnLogin.clicked.connect(login)
+        # self.btnLogin.clicked.connect(login)
 
 
 def login():
     tokens = get_tokens()
-    if tokens:
-        window.vLayout1.setVisible(False)
-        window.show()
+    if not tokens:
+        app.quit()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -30,6 +30,9 @@ if __name__ == "__main__":
     msg_box.setWindowTitle("Deere Reports")
     login_btn = msg_box.addButton("Ingresar", QMessageBox.ButtonRole.AcceptRole)
     cancel_btn = msg_box.addButton("Salir", QMessageBox.ButtonRole.RejectRole)
+    msg_box.exec()
     if msg_box.clickedButton() == login_btn:
         login()
-    sys.exit(app.exec())
+        sys.exit(app.exec())
+    else:
+        QApplication.instance().quit()
