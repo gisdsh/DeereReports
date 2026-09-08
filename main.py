@@ -1,7 +1,7 @@
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox, QHeaderView
-from ui.ui_mainwindow import Ui_MainWindow
-from logic.login import get_tokens, get_organizations, get_machines
+from PySide6.QtWidgets import QApplication, QMessageBox
+from ui.ui import MainWindow
+from logic.logic import get_tokens, get_organizations, get_machines
 
 ORGANIZATIONS = []
 MACHINES = []
@@ -9,16 +9,6 @@ MACHINES = []
 class MainController:
     def __init__(self):
         self.ui = MainWindow()
-
-
-class MainWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setupUi(self)
-        self.table_hours.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.table_hours.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.centralwidget.setVisible(False)
-
 
 
 def login():
@@ -45,7 +35,6 @@ def login():
         sys.exit(app.exec())
     else:
         QApplication.instance().quit()
-
 
 
 if __name__ == "__main__":

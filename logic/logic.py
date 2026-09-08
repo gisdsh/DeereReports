@@ -116,7 +116,6 @@ def get_tokens() -> dict:
 def get_organizations(tokens) -> list:
     url = f"https://sandboxapi.deere.com/platform/organizations"
     res = api_get(tokens['access_token'], url)
-    orgs = res.json()["values"]
     dfOrg = pd.json_normalize(res.json()["values"])
     orgsList = dfOrg[['id', 'name']].values.tolist()
     return orgsList
@@ -132,6 +131,19 @@ def get_machines(tokens) -> list:
     machinesList.sort(key=lambda x: int(x[1]), reverse=True)
     return machinesList
 
+
+def get_machine_measurements(tokens, principal_id, datetime_from, datetime_to, offset) -> pd.DataFrame:
+    url = (f"https://api.deere.com/platform/machines/{principal_id}/machineMeasurements?"
+           f"embed=measurementDefinition&startDate={datetime_from}&endDate={datetime_to}"
+           f"&interval=aggregated&aggregationUTCOffset={offset}&itemLimit=5000&x-deere-no-paging=true")
+    res = api_get(tokens['access_token'], url)
+    dfMeas = pd.json_normalize(res.json()["values"])
+
+def query_load_profile():
+    principal_id = ""
+    datetime_from = ""
+    datetime_to = ""
+    offset = "-03:00"
 
 if __name__ == "__main__":
     pass
