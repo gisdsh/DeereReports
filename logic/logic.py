@@ -8,10 +8,12 @@ from pathlib import Path
 from urllib.parse import parse_qsl, urlencode
 import requests
 import pandas as pd
+from PySide6.QtCore import QDateTime
 
 SCOPES = ["ag1", "ag2", "ag3", "eq1", "eq2", "org1", "org2", "files", "offline_access"]
 HOST = "localhost"
 PORT = 9090
+UTC_OFFSET = "-03:00"
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -139,14 +141,33 @@ def get_machine_measurements(tokens, principal_id, datetime_from, datetime_to, o
     res = api_get(tokens['access_token'], url)
     dfMeas = pd.json_normalize(res.json()["values"])
 
-def query_load_profile():
-    principal_id = ""
-    datetime_from = ""
-    datetime_to = ""
-    offset = "-03:00"
+
+def process_machine_measurements(window):
+    principal_id = window.edtSerie.text()    # '1BM8270RKPS101195'
+    datetime_from = window.dteInicio.dateTime()  # PySide6.QtCore.QDateTime(2026, 8, 1, 0, 0, 0, 0, 0) → convert to ISO: '2026-08-01T00:00:00.000Z'
+    datetime_to = window.dteFin.dateTime()       # PySide6.QtCore.QDateTime(2026, 8, 31, 23, 59, 0, 0, 0) → convert to ISO: '2026-08-31T23:59:59.999'
+    print(datetime_to.date().day())
+    print(datetime_to.date().month())
+    print(datetime_to.date().year())
+    print(datetime_to.time().hour())
+    print(datetime_to.time().minute())
+    iso_datetime_from = qdatetime2iso(datetime_to)
+    offset = UTC_OFFSET
+
+
+def qdatetime2iso(qdt):
+    return None
+
+
+# def process_machine_measurements():
+#     principal_id = '1BM8270RKPS101195'
+#     datetime_from = '1/8/2026 00:00'
+#     datetime_to = '31/8/2026 23:59'
+#     offset = UTC_OFFSET
 
 if __name__ == "__main__":
     pass
+    # process_machine_measurements()
     # refreshed_tokens = refresh_token(secrets, tokens["refresh_token"])
     # print(f"Refreshed tokens: {refreshed_tokens}")
 
