@@ -1,19 +1,19 @@
-import hashlib
-import json
 import os
+import settings
+import hashlib
 import webbrowser
-from html.parser import HTMLParser
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from pathlib import Path
 from urllib.parse import parse_qsl, urlencode
 import requests
 import pandas as pd
-from PySide6.QtCore import QDateTime
+from pathlib import Path
+from html.parser import HTMLParser
 
-SCOPES = ["ag1", "ag2", "ag3", "eq1", "eq2", "org1", "org2", "files", "offline_access"]
-HOST = "localhost"
-PORT = 9090
-UTC_OFFSET = "-03:00"
+settings.SCOPES = ["ag1", "ag2", "ag3", "eq1", "eq2", "org1", "org2", "files", "offline_access"]
+settings.HOST = "localhost"
+settings.PORT = 9090
+settings.UTC_OFFSET = "-03:00"
+
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -33,13 +33,13 @@ class Server(HTTPServer):
 
 
 def authorise(secrets: dict[str, str]) -> dict[str, str]:
-    redirect_uri = f"{secrets['redirect_uris'][0]}:{PORT}/callback"
+    redirect_uri = f"{secrets['redirect_uris'][0]}:{settings.PORT}/callback"
 
     params = {
         "response_type": "code",
         "client_id": secrets["client_id"],
         "redirect_uri": redirect_uri,
-        "scope": " ".join(SCOPES),
+        "scope": " ".join(settings.SCOPES),
         "state": hashlib.sha256(os.urandom(1024)).hexdigest(),
     }
         # "access_type": "offline",
@@ -47,7 +47,7 @@ def authorise(secrets: dict[str, str]) -> dict[str, str]:
     if not webbrowser.open(url):
         raise RuntimeError("Failed to open browser")
 
-    server = Server(HOST, PORT)
+    server = Server(settings.HOST, settings.PORT)
     try:
         server.handle_request()
     finally:
@@ -143,20 +143,28 @@ def get_machine_measurements(tokens, principal_id, datetime_from, datetime_to, o
 
 
 def process_machine_measurements(window):
+
     principal_id = window.edtSerie.text()    # '1BM8270RKPS101195'
     datetime_from = window.dteInicio.dateTime()  # PySide6.QtCore.QDateTime(2026, 8, 1, 0, 0, 0, 0, 0) → convert to ISO: '2026-08-01T00:00:00.000Z'
     datetime_to = window.dteFin.dateTime()       # PySide6.QtCore.QDateTime(2026, 8, 31, 23, 59, 0, 0, 0) → convert to ISO: '2026-08-31T23:59:59.999'
-    print(datetime_to.date().day())
-    print(datetime_to.date().month())
-    print(datetime_to.date().year())
-    print(datetime_to.time().hour())
-    print(datetime_to.time().minute())
-    iso_datetime_from = qdatetime2iso(datetime_to)
-    offset = UTC_OFFSET
+    iso_datetime_from = qdatetime2iso(datetime_from)
+    iso_datetime_ti = qdatetime2iso(datetime_to)
+    offset = settings.UTC_OFFSET
+    url = get_machine_measurements(settings.TOKENS, principal_id, iso_datetime_from, iso_datetime_ti, offset)
+    pass
 
 
 def qdatetime2iso(qdt):
-    return None
+    YY = str(qdt.date().year())
+    MM = str(qdt.date().month()).zfill(2)
+    DD = str(qdt.date().day()).zfill(2)
+    hh = str(qdt.time().hour()).zfill(2)
+    mm = str(qdt.time().minute()).zfill(2)
+    if mm == "59":
+        ss = "59.999"
+    else:
+        ss = "00.000"
+    return f"{YY}-{MM}-{DD}T{hh}:{mm}:{ss}Z"
 
 
 # def process_machine_measurements():
