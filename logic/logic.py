@@ -139,19 +139,50 @@ def get_machine_measurements(tokens, principal_id, datetime_from, datetime_to, o
            f"embed=measurementDefinition&startDate={datetime_from}&endDate={datetime_to}"
            f"&interval=aggregated&aggregationUTCOffset={offset}&itemLimit=5000&x-deere-no-paging=true")
     res = api_get(tokens['access_token'], url)
-    dfMeas = pd.json_normalize(res.json()["values"])
+    df = pd.json_normalize(res.json()["values"])
+
+    # Create table
+    i = 0
+    dct = dict()
+    defs_list = df['machineMeasurementDefinition.name'].to_list()
+    for mmd in defs_list:
+        if 'Engine RPM at Power' in mmd:
+            rpm = df['machineMeasurementDefinition.bucketDefinitions.bucketDefinitions'][i][0]['description']
+            idx = str(df['machineMeasurementDefinition.axesGroup.priority'][i])
+            rpm_result_dict = {}
+            dct_key = idx + ' - ' + mmd
+            def_list = [(d.get('sequenceNumber'), d.get('description')) for d in
+                        df['machineMeasurementDefinition.bucketDefinitions.bucketDefinitions'][i]]
+            values_list = [(d.get('sequenceNumber'), d.get('value')) for d in
+                           df['series.intervals'][i][0]['buckets']['buckets']]
+            for val in values_list:
+                rpm = int(next((second for first, second in def_list if first == val[0]), None))
+                rpm_result_dict[rpm] = val[1] / 3600
+            rpm_result_dict = dict(sorted(rpm_result_dict.items()))
+            # Convert keys to strings
+            rpm_result_dict = {str(key): value for key, value in rpm_result_dict.items()}
+            dct[dct_key] = rpm_result_dict
+        i += 1
+
+    sorted_by_key = dict(sorted(dct.items(), reverse=True))
+    sorted_by_key = {key[26:]: value for key, value in sorted_by_key.items()}
+    df_table = pd.DataFrame.from_dict(sorted_by_key, orient='index')
+    return df_table
+    # print(df_table.to_string())
+    # df_table.to_csv('load_profile_table.csv', index=True)
 
 
 def process_machine_measurements(window):
-
-    principal_id = window.edtSerie.text()    # '1BM8270RKPS101195'
+    PIN = window.edtSerie.text()    # '1BM8270RKPS101195'
+    columns = list(zip(*settings.MACHINES))
+    position = columns[2].index(PIN)
+    principal_id = columns[1][position]
     datetime_from = window.dteInicio.dateTime()  # PySide6.QtCore.QDateTime(2026, 8, 1, 0, 0, 0, 0, 0) → convert to ISO: '2026-08-01T00:00:00.000Z'
     datetime_to = window.dteFin.dateTime()       # PySide6.QtCore.QDateTime(2026, 8, 31, 23, 59, 0, 0, 0) → convert to ISO: '2026-08-31T23:59:59.999'
     iso_datetime_from = qdatetime2iso(datetime_from)
     iso_datetime_ti = qdatetime2iso(datetime_to)
     offset = settings.UTC_OFFSET
-    url = get_machine_measurements(settings.TOKENS, principal_id, iso_datetime_from, iso_datetime_ti, offset)
-    pass
+    df_load_profile = get_machine_measurements(settings.TOKENS, principal_id, iso_datetime_from, iso_datetime_ti, offset)
 
 
 def qdatetime2iso(qdt):
@@ -167,15 +198,8 @@ def qdatetime2iso(qdt):
     return f"{YY}-{MM}-{DD}T{hh}:{mm}:{ss}Z"
 
 
-# def process_machine_measurements():
-#     principal_id = '1BM8270RKPS101195'
-#     datetime_from = '1/8/2026 00:00'
-#     datetime_to = '31/8/2026 23:59'
-#     offset = UTC_OFFSET
-
 if __name__ == "__main__":
     pass
-    # process_machine_measurements()
     # refreshed_tokens = refresh_token(secrets, tokens["refresh_token"])
     # print(f"Refreshed tokens: {refreshed_tokens}")
 

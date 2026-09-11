@@ -29,7 +29,18 @@
      </widget>
     </item>
     <item row="0" column="5">
-     <widget class="QDateTimeEdit" name="dteFin"/>
+     <widget class="QDateTimeEdit" name="dteFin">
+      <property name="dateTime">
+       <datetime>
+        <hour>23</hour>
+        <minute>59</minute>
+        <second>59</second>
+        <year>2026</year>
+        <month>8</month>
+        <day>31</day>
+       </datetime>
+      </property>
+     </widget>
     </item>
     <item row="0" column="0">
      <widget class="QLabel" name="lblSerie">
@@ -113,10 +124,25 @@
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QLineEdit" name="edtSerie"/>
+     <widget class="QLineEdit" name="edtSerie">
+      <property name="text">
+       <string>1BM8250RHSS000194</string>
+      </property>
+     </widget>
     </item>
     <item row="0" column="3">
-     <widget class="QDateTimeEdit" name="dteInicio"/>
+     <widget class="QDateTimeEdit" name="dteInicio">
+      <property name="dateTime">
+       <datetime>
+        <hour>0</hour>
+        <minute>0</minute>
+        <second>0</second>
+        <year>2026</year>
+        <month>8</month>
+        <day>1</day>
+       </datetime>
+      </property>
+     </widget>
     </item>
     <item row="0" column="2">
      <widget class="QLabel" name="lblInicio">
@@ -152,7 +178,7 @@
      <x>0</x>
      <y>0</y>
      <width>790</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

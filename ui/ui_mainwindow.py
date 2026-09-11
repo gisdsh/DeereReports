@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_mainwindow.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.11.2
+## Created by: Qt User Interface Compiler version 6.10.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -37,6 +37,7 @@ class Ui_MainWindow(object):
 
         self.dteFin = QDateTimeEdit(self.centralwidget)
         self.dteFin.setObjectName(u"dteFin")
+        self.dteFin.setDateTime(QDateTime(QDate(2026, 8, 31), QTime(23, 59, 59)))
 
         self.gridLayout.addWidget(self.dteFin, 0, 5, 1, 1)
 
@@ -77,6 +78,7 @@ class Ui_MainWindow(object):
 
         self.dteInicio = QDateTimeEdit(self.centralwidget)
         self.dteInicio.setObjectName(u"dteInicio")
+        self.dteInicio.setDateTime(QDateTime(QDate(2026, 8, 1), QTime(0, 0, 0)))
 
         self.gridLayout.addWidget(self.dteInicio, 0, 3, 1, 1)
 
@@ -95,7 +97,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 790, 21))
+        self.menubar.setGeometry(QRect(0, 0, 790, 22))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -115,6 +117,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.btnQuery.setText(QCoreApplication.translate("MainWindow", u"&Generar", None))
         self.lblSerie.setText(QCoreApplication.translate("MainWindow", u"&Serie", None))
+        self.edtSerie.setText(QCoreApplication.translate("MainWindow", u"1BM8250RHSS000194", None))
         self.lblInicio.setText(QCoreApplication.translate("MainWindow", u"&Inicio", None))
         self.lblFin.setText(QCoreApplication.translate("MainWindow", u"&Fin", None))
     # retranslateUi

@@ -26,8 +26,8 @@ def login():
         window.statusbar.showMessage("Cargando . . .")
         settings.TOKENS = get_tokens()
         if settings.TOKENS:
-            ORGANIZATIONS = get_organizations(settings.TOKENS)
-            MACHINES = get_machines(settings.TOKENS)
+            settings.ORGANIZATIONS = get_organizations(settings.TOKENS)
+            settings.MACHINES = get_machines(settings.TOKENS)
             window.statusbar.showMessage(f"{str(len(settings.ORGANIZATIONS))} organizaciones, {str(len(settings.MACHINES))} máquinas")
         else:
             app.quit()
