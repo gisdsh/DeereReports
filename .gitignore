@@ -144,3 +144,4 @@ media
 /.idea/*.*
 /.idea/
 *.csv
+*.json

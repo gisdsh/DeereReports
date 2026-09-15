@@ -21,27 +21,6 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="7">
-     <widget class="QPushButton" name="btnQuery">
-      <property name="text">
-       <string>&amp;Generar</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="5">
-     <widget class="QDateTimeEdit" name="dteFin">
-      <property name="dateTime">
-       <datetime>
-        <hour>23</hour>
-        <minute>59</minute>
-        <second>59</second>
-        <year>2026</year>
-        <month>8</month>
-        <day>31</day>
-       </datetime>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0">
      <widget class="QLabel" name="lblSerie">
       <property name="text">
@@ -55,78 +34,23 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0" colspan="9">
-     <widget class="QTableWidget" name="table_hours">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <property name="sizeAdjustPolicy">
-       <enum>QAbstractScrollArea::AdjustIgnored</enum>
-      </property>
-      <property name="rowCount">
-       <number>13</number>
-      </property>
-      <property name="columnCount">
-       <number>15</number>
-      </property>
-      <attribute name="horizontalHeaderVisible">
-       <bool>true</bool>
-      </attribute>
-      <attribute name="horizontalHeaderCascadingSectionResizes">
-       <bool>false</bool>
-      </attribute>
-      <attribute name="horizontalHeaderDefaultSectionSize">
-       <number>50</number>
-      </attribute>
-      <attribute name="horizontalHeaderHighlightSections">
-       <bool>true</bool>
-      </attribute>
-      <attribute name="verticalHeaderHighlightSections">
-       <bool>true</bool>
-      </attribute>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
-      <column/>
-      <column/>
-      <column/>
-      <column/>
-      <column/>
-      <column/>
-      <column/>
-      <column/>
-      <column/>
-      <column/>
-      <column/>
-      <column/>
-      <column/>
-      <column/>
-      <column/>
-     </widget>
-    </item>
     <item row="0" column="1">
      <widget class="QLineEdit" name="edtSerie">
       <property name="text">
        <string>1BM8250RHSS000194</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QLabel" name="lblInicio">
+      <property name="text">
+       <string>&amp;Inicio</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <property name="buddy">
+       <cstring>dteInicio</cstring>
       </property>
      </widget>
     </item>
@@ -144,19 +68,6 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="2">
-     <widget class="QLabel" name="lblInicio">
-      <property name="text">
-       <string>&amp;Inicio</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-      <property name="buddy">
-       <cstring>dteInicio</cstring>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="4">
      <widget class="QLabel" name="lblFin">
       <property name="text">
@@ -170,6 +81,30 @@
       </property>
      </widget>
     </item>
+    <item row="0" column="5">
+     <widget class="QDateTimeEdit" name="dteFin">
+      <property name="dateTime">
+       <datetime>
+        <hour>23</hour>
+        <minute>59</minute>
+        <second>59</second>
+        <year>2026</year>
+        <month>8</month>
+        <day>31</day>
+       </datetime>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="6">
+     <widget class="QPushButton" name="btnQuery">
+      <property name="text">
+       <string>&amp;Generar</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="7">
+     <widget class="QWidget" name="wdg1" native="true"/>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -178,7 +113,7 @@
      <x>0</x>
      <y>0</y>
      <width>790</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
