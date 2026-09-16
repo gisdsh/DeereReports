@@ -12,6 +12,8 @@ import numpy as np
 from pathlib import Path
 from html.parser import HTMLParser
 
+import ui.ui
+
 settings.SCOPES = ["ag1", "ag2", "ag3", "eq1", "eq2", "org1", "org2", "files", "offline_access"]
 settings.HOST = "localhost"
 settings.PORT = 9090
@@ -132,7 +134,7 @@ def get_machines(tokens) -> list:
     machines = res.json()["values"]
     dfMach = pd.json_normalize(machines)
     dfMach.sort_values(by='id', key=lambda x: x.astype(int), ascending=False)
-    machinesList = dfMach[['id', 'principalId', 'serialNumber', 'name', 'organization.id']].values.tolist()
+    machinesList = dfMach[['id', 'principalId', 'model.name', 'serialNumber', 'name', 'organization.id']].values.tolist()
     machinesList.sort(key=lambda x: int(x[1]), reverse=True)
     return machinesList
 
@@ -175,14 +177,20 @@ def create_table(df_measurements):
     return df_load_profile
 
 
-def heatmap(df_load_profile, pin, iso_datetime_from, iso_datetime_to):
+def heatmap(window, df_load_profile, model, pin, iso_datetime_from, iso_datetime_to):
     col_headers = df_load_profile.columns.tolist()
     row_headers = df_load_profile.index.tolist()
     data = df_load_profile.to_numpy()
-    # .tolist()
+    canvas = window.canvas
+    ax = canvas.axes
+    fig =canvas.fig
 
-    fig, ax = plt.subplots(figsize=(12, 6))
-    im = ax.imshow(data, cmap=plt.cm.YlGn, aspect='auto')
+    if window.plot_ref is None:
+        window.plot_ref = 1
+    else:
+        ax.clear()
+
+    im = canvas.axes.imshow(data, cmap=plt.cm.YlGn, aspect='auto')
 
     # Show all ticks and label them with the respective list entries
     ax.set_xticks(range(len(col_headers)), labels=col_headers,
@@ -197,10 +205,13 @@ def heatmap(df_load_profile, pin, iso_datetime_from, iso_datetime_to):
                 text = ax.text(j, i, num,
                                ha="center", va="center", color="black",
                                fontsize=10, wrap=True)
-
-    ax.set_title(f"Perfil de carga - {pin} - desde {iso_datetime_from} hasta {iso_datetime_to}")
+    date_from = f"{iso_datetime_from[8:-14]}/{iso_datetime_from[5:-17]}/{iso_datetime_from[0:-20]}"
+    date_to = f"{iso_datetime_to[8:-14]}/{iso_datetime_to[5:-17]}/{iso_datetime_to[0:-20]}"
+    ax.set_title(f"Perfil de carga\nTractor John Deere {model} serie {pin}\ndesde {date_from} hasta {date_to}")
     fig.tight_layout()
-    plt.show()
+    fig.canvas.draw()
+
+    # plt.show()
 
     # df_load_profile.to_csv('load_profile_table.csv', index=True)
     # df_load_profile.to_json("kk.json", indent=2)
@@ -209,58 +220,29 @@ def heatmap(df_load_profile, pin, iso_datetime_from, iso_datetime_to):
 def process_machine_measurements(window):
     pin = window.edtSerie.text()    # '1BM8270RKPS101195'
     columns = list(zip(*settings.MACHINES))
-    position = columns[2].index(pin)
-    principal_id = columns[1][position]
-    datetime_from = window.dteInicio.dateTime()  # PySide6.QtCore.QDateTime(2026, 8, 1, 0, 0, 0, 0, 0) → convert to ISO: '2026-08-01T00:00:00.000Z'
-    datetime_to = window.dteFin.dateTime()       # PySide6.QtCore.QDateTime(2026, 8, 31, 23, 59, 0, 0, 0) → convert to ISO: '2026-08-31T23:59:59.999'
-    iso_datetime_from = qdatetime2iso(datetime_from)
-    iso_datetime_to = qdatetime2iso(datetime_to)
-    offset = settings.UTC_OFFSET
-    df_measurements = get_machine_measurements(settings.TOKENS, principal_id, iso_datetime_from, iso_datetime_to, offset)
-    if 'Engine RPM at Power 0 to 10' in df_measurements['machineMeasurementDefinition.name'].to_list():
-        df_load_profile = create_table(df_measurements)
-        heatmap(df_load_profile, pin, iso_datetime_from, iso_datetime_to)
-        print(df_load_profile.to_string())
+    if pin in columns[3]:
+        position = columns[3].index(pin)
+        principal_id = columns[1][position]
+        model = columns[2][position]
+        datetime_from = window.dteInicio.dateTime()  # PySide6.QtCore.QDateTime(2026, 8, 1, 0, 0, 0, 0, 0) → convert to ISO: '2026-08-01T00:00:00.000Z'
+        datetime_to = window.dteFin.dateTime()       # PySide6.QtCore.QDateTime(2026, 8, 31, 23, 59, 0, 0, 0) → convert to ISO: '2026-08-31T23:59:59.999'
+        iso_datetime_from = qdatetime2iso(datetime_from)
+        iso_datetime_to = qdatetime2iso(datetime_to)
+        offset = settings.UTC_OFFSET
+        df_measurements = get_machine_measurements(settings.TOKENS, principal_id, iso_datetime_from, iso_datetime_to, offset)
+        if ('machineMeasurementDefinition.name' in df_measurements.keys() and
+                'Engine RPM at Power 0 to 10' in df_measurements['machineMeasurementDefinition.name'].to_list()):
+            df_load_profile = create_table(df_measurements)
+            heatmap(window, df_load_profile, model, pin, iso_datetime_from, iso_datetime_to)
+            print(df_load_profile.to_string())
+        else:
+            window.canvas.axes.clear()
+            # window.canvas.fig.canvas.figure.clear()
+            print("No hay datos de perfil de carga para esta unidad")
     else:
-        print("No hay datos de perfil de carga para esta unidad")
-
-
-'''
-1BM8295RCRS100610
-1BM8345RVRS101337
-1RW8320RJGP112097
-1J07230CHR3000159
-1BM8250RTRS000047
-1BM8320RVRS100913
-1BM8295RJSS100630
-1J07200CCR3000180
-1BM8270RCRS101339
-1J07230CKR3000282
-1RW8270RVAP009515
-1BM8345RCHS100007
-1BM8270RPSS101494
-1BM8320RLSS100970
-1J07230CHR3000288
-1BM8370RESS100998
-1BM8295RPJ0100070
-1RW8335RTDP082699
-1BM8345RTSS101403
-1J07230CLR3000256
-1RW8295RAAP005423
-1RW8335RJCP057255
-1RW8345RJGS115650
-1BM8270RCKS100415
-1RW7230STLC110497
-1RW8335RKCP055701
-1BM8270RKPS101195
-1RW8335RCCP055659
-1RW8335RCCP055659
-1BM8345RVHS100008
-1RW8270RHGP112608
-1BM8250RHSS000194
-1BM8270RKJ0100177
-1J07230CTR3000201
-'''
+        window.canvas.axes.clear()
+        # window.canvas.fig.canvas.figure.clear()
+        print("No se encontró ninguna unidad con ese número de serie")
 
 
 def qdatetime2iso(qdt):
@@ -274,6 +256,44 @@ def qdatetime2iso(qdt):
     else:
         ss = "00.000"
     return f"{YY}-{MM}-{DD}T{hh}:{mm}:{ss}Z"
+
+
+'''
+1BM8295RCRS100610
+1BM8345RVRS101337
+1RW8320RJGP112097
+1J07230CHR3000159
+1BM8250RTRS000047
+1BM8320RVRS100913
+1BM8295RJSS100630
+1J07200CCR3000180
+1BM8270RCRS101339
+1J07230CKR3000282
+1RW8270RVAP009515 -
+1BM8345RCHS100007
+1BM8270RPSS101494
+1BM8320RLSS100970
+1J07230CHR3000288
+1BM8370RESS100998
+1BM8295RPJ0100070
+1RW8335RTDP082699 -
+1BM8345RTSS101403
+1J07230CLR3000256
+1RW8295RAAP005423 *
+1RW8335RJCP057255
+1RW8345RJGS115650
+1BM8270RCKS100415
+1RW7230STLC110497
+1RW8335RKCP055701 -
+1BM8270RKPS101195
+1RW8335RCCP055659 *
+1RW8335RCCP055659 *
+1BM8345RVHS100008
+1RW8270RHGP112608
+1BM8250RHSS000194
+1BM8270RKJ0100177
+1J07230CTR3000201
+'''
 
 
 if __name__ == "__main__":
