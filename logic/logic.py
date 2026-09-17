@@ -210,6 +210,7 @@ def heatmap(window, df_load_profile, model, pin, iso_datetime_from, iso_datetime
     ax.set_title(f"Perfil de carga\nTractor John Deere {model} serie {pin}\ndesde {date_from} hasta {date_to}")
     fig.tight_layout()
     fig.canvas.draw()
+    # fig.savefig("my_plot.pdf", format="pdf", bbox_inches="tight")
 
     # plt.show()
 
