@@ -21,6 +21,19 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="4">
+     <widget class="QLabel" name="lblFin">
+      <property name="text">
+       <string>&amp;Fin</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <property name="buddy">
+       <cstring>dteFin</cstring>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="0">
      <widget class="QLabel" name="lblSerie">
       <property name="text">
@@ -31,13 +44,6 @@
       </property>
       <property name="buddy">
        <cstring>edtSerie</cstring>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="edtSerie">
-      <property name="text">
-       <string>1BM8250RHSS000194</string>
       </property>
      </widget>
     </item>
@@ -54,6 +60,23 @@
       </property>
      </widget>
     </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="edtSerie">
+      <property name="text">
+       <string>1BM8250RHSS000194</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="7">
+     <widget class="QPushButton" name="btnExport">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>&amp;Exportar...</string>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="3">
      <widget class="QDateTimeEdit" name="dteInicio">
       <property name="dateTime">
@@ -65,19 +88,6 @@
         <month>8</month>
         <day>1</day>
        </datetime>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="4">
-     <widget class="QLabel" name="lblFin">
-      <property name="text">
-       <string>&amp;Fin</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-      <property name="buddy">
-       <cstring>dteFin</cstring>
       </property>
      </widget>
     </item>
@@ -98,12 +108,31 @@
     <item row="0" column="6">
      <widget class="QPushButton" name="btnQuery">
       <property name="text">
-       <string>&amp;Generar</string>
+       <string>&amp;Crear tabla</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+      <property name="default">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
-    <item row="1" column="0" colspan="7">
+    <item row="3" column="0" colspan="8">
      <widget class="QWidget" name="wdg1" native="true"/>
+    </item>
+    <item row="1" column="0">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
     </item>
    </layout>
   </widget>

@@ -1,4 +1,7 @@
 import os
+
+from PySide6.QtWidgets import QMessageBox
+
 import settings
 import hashlib
 import webbrowser
@@ -210,12 +213,6 @@ def heatmap(window, df_load_profile, model, pin, iso_datetime_from, iso_datetime
     ax.set_title(f"Perfil de carga\nTractor John Deere {model} serie {pin}\ndesde {date_from} hasta {date_to}")
     fig.tight_layout()
     fig.canvas.draw()
-    # fig.savefig("my_plot.pdf", format="pdf", bbox_inches="tight")
-
-    # plt.show()
-
-    # df_load_profile.to_csv('load_profile_table.csv', index=True)
-    # df_load_profile.to_json("kk.json", indent=2)
 
 
 def process_machine_measurements(window):
@@ -234,16 +231,34 @@ def process_machine_measurements(window):
         if ('machineMeasurementDefinition.name' in df_measurements.keys() and
                 'Engine RPM at Power 0 to 10' in df_measurements['machineMeasurementDefinition.name'].to_list()):
             df_load_profile = create_table(df_measurements)
+            window.wdg1.setVisible(True)
             heatmap(window, df_load_profile, model, pin, iso_datetime_from, iso_datetime_to)
+            window.btnExport.setEnabled(True)
             print(df_load_profile.to_string())
+            df_load_profile.to_csv('load_profile_table.csv', index=True)
         else:
-            window.canvas.axes.clear()
-            # window.canvas.fig.canvas.figure.clear()
+            window.btnExport.setEnabled(False)
+            window.wdg1.setVisible(False)
+            QMessageBox.information(None, "No hay datos", "No hay datos de perfil de carga para esta unidad")
             print("No hay datos de perfil de carga para esta unidad")
     else:
-        window.canvas.axes.clear()
-        # window.canvas.fig.canvas.figure.clear()
+        window.btnExport.setEnabled(False)
+        window.wdg1.setVisible(False)
+        QMessageBox.information(None, "No encontrado", "No se encontró ninguna unidad con ese número de serie")
         print("No se encontró ninguna unidad con ese número de serie")
+    window.edtSerie.setFocus()
+    window.edtSerie.selectionEnd()
+
+
+def pdf_export(window):
+    canvas = window.canvas
+    fig =canvas.fig
+    pin = window.edtSerie.text()
+    ini = window.dteInicio.text()
+    ini = ini[8:10] + ini[3:5] + ini[0:2]
+    fin = window.dteFin.text()
+    fin = fin[8:10] + fin[3:5] + fin[0:2]
+    fig.savefig(f"Perfil_de_carga_{pin}_{ini}_{fin}.pdf", format="pdf", bbox_inches="tight")
 
 
 def qdatetime2iso(qdt):
@@ -257,44 +272,6 @@ def qdatetime2iso(qdt):
     else:
         ss = "00.000"
     return f"{YY}-{MM}-{DD}T{hh}:{mm}:{ss}Z"
-
-
-'''
-1BM8295RCRS100610
-1BM8345RVRS101337
-1RW8320RJGP112097
-1J07230CHR3000159
-1BM8250RTRS000047
-1BM8320RVRS100913
-1BM8295RJSS100630
-1J07200CCR3000180
-1BM8270RCRS101339
-1J07230CKR3000282
-1RW8270RVAP009515 -
-1BM8345RCHS100007
-1BM8270RPSS101494
-1BM8320RLSS100970
-1J07230CHR3000288
-1BM8370RESS100998
-1BM8295RPJ0100070
-1RW8335RTDP082699 -
-1BM8345RTSS101403
-1J07230CLR3000256
-1RW8295RAAP005423 *
-1RW8335RJCP057255
-1RW8345RJGS115650
-1BM8270RCKS100415
-1RW7230STLC110497
-1RW8335RKCP055701 -
-1BM8270RKPS101195
-1RW8335RCCP055659 *
-1RW8335RCCP055659 *
-1BM8345RVHS100008
-1RW8270RHGP112608
-1BM8250RHSS000194
-1BM8270RKJ0100177
-1J07230CTR3000201
-'''
 
 
 if __name__ == "__main__":

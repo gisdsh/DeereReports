@@ -32,6 +32,8 @@ def login():
         else:
             app.quit()
         window.centralwidget.setVisible(True)
+        window.edtSerie.setFocus()
+        window.edtSerie.selectionEnd()
         sys.exit(app.exec())
     else:
         QApplication.instance().quit()
