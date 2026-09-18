@@ -254,10 +254,8 @@ def pdf_export(window):
     canvas = window.canvas
     fig =canvas.fig
     pin = window.edtSerie.text()
-    ini = window.dteInicio.text()
-    ini = ini[8:10] + ini[3:5] + ini[0:2]
-    fin = window.dteFin.text()
-    fin = fin[8:10] + fin[3:5] + fin[0:2]
+    ini = f"{str(window.dteInicio.date().year())[2:]}{window.dteInicio.date().month():02}{window.dteInicio.date().day():02}"
+    fin = f"{str(window.dteFin.date().year())[2:]}{window.dteFin.date().month():02}{window.dteFin.date().day():02}"
     fig.savefig(f"Perfil_de_carga_{pin}_{ini}_{fin}.pdf", format="pdf", bbox_inches="tight")
 
 
